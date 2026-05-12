@@ -3,6 +3,7 @@ const cors = require('cors');
 const dotenv = require('dotenv');
 const connectDB = require('./config/db');
 const productRoutes = require('./routes/productRoutes');
+const userRoutes = require('./routes/userRoutes');
 
 dotenv.config();
 connectDB();
@@ -14,6 +15,7 @@ app.use(express.json());
 
 // Rutas
 app.use('/api/products', productRoutes);
+app.use('/api/users', userRoutes);
 
 app.get('/', (req, res) => {
   res.json({ message: '🚀 API funcionando correctamente' });
