@@ -1,12 +1,16 @@
 import { useState, useEffect } from 'react';
 import axios from '../api/axios';
 import useCartStore from '../store/cartStore';
+import useAuthStore from '../store/authStore';
+import { useNavigate } from 'react-router-dom';
 
 function Products() {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const { addItem } = useCartStore();
+  const { user } = useAuthStore();
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -80,10 +84,9 @@ function Products() {
                   </span>
                 </div>
                 <button
-                    onClick={() => addItem(product)}
-                    className="mt-4 w-full bg-indigo-600 hover:bg-indigo-700 text-white py-2 rounded transition"
-                >
-                  Añadir al carrito
+                  onClick={() => user ? addItem(product) : navigate('/login')}
+                  className="mt-4 w-full bg-indigo-600 hover:bg-indigo-700 text-white py-2 rounded transition">
+                  {'Añadir al carrito'}
                 </button>
               </div>
             </div>
