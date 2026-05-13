@@ -7,6 +7,7 @@ import GuestRoute from '../components/GuestRoute';
 import Products from '../pages/Products';
 import Cart from '../pages/Cart';
 import ProtectedRoute from '../components/ProtectedRoute';
+import Admin from '../pages/Admin';
 
 const router = createBrowserRouter([
   {
@@ -32,6 +33,10 @@ const router = createBrowserRouter([
       {
         path: 'cart',
         element: <ProtectedRoute><Cart /></ProtectedRoute>,
+      },
+      {
+        path: 'admin',
+        element: <ProtectedRoute adminOnly={true}><Admin /></ProtectedRoute>
       },
     ],
   },
