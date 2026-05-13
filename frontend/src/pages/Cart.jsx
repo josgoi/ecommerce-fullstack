@@ -1,4 +1,6 @@
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import axios from '../api/axios';
 import useCartStore from '../store/cartStore';
 import useAuthStore from '../store/authStore';
 
@@ -6,13 +8,20 @@ function Cart() {
   const { items, removeItem, updateQuantity, getTotal } = useCartStore();
   const { user } = useAuthStore();
   const navigate = useNavigate();
+  const [error, setError] = useState('');
 
-  const handleCheckout = () => {
+  const handleCheckout = async () => {
     if (!user) {
       navigate('/login');
       return;
     }
-    navigate('/checkout');
+    try {
+      const { data } = await axios.post('/payments/create-checkout-session', { items });
+      window.location.href = data.url;
+    } catch (err) {
+      setError(err.response?.data?.message || 'Error al procesar el pago');
+      console.error(err);
+    }
   };
 
   if (items.length === 0) {
@@ -75,19 +84,26 @@ function Cart() {
         ))}
       </div>
 
-      <div className="mt-8 bg-white rounded-lg shadow-md p-6 flex justify-between items-center">
-        <div>
-          <p className="text-gray-500">Total</p>
-          <p className="text-3xl font-bold text-indigo-600">
-            {getTotal().toFixed(2)}€
-          </p>
+      <div className="mt-8 bg-white rounded-lg shadow-md p-6">
+        {error && (
+          <div className="bg-red-100 text-red-700 p-3 rounded mb-4">
+            {error}
+          </div>
+        )}
+        <div className="flex justify-between items-center">
+          <div>
+            <p className="text-gray-500">Total</p>
+            <p className="text-3xl font-bold text-indigo-600">
+              {getTotal().toFixed(2)}€
+            </p>
+          </div>
+          <button
+            onClick={handleCheckout}
+            className="bg-indigo-600 hover:bg-indigo-700 text-white px-8 py-3 rounded-lg font-semibold transition"
+          >
+            Proceder al pago
+          </button>
         </div>
-        <button
-          onClick={handleCheckout}
-          className="bg-indigo-600 hover:bg-indigo-700 text-white px-8 py-3 rounded-lg font-semibold transition"
-        >
-          Proceder al pago
-        </button>
       </div>
     </div>
   );
